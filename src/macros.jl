@@ -693,6 +693,16 @@ for (mac,sym) in [(:constraints,  Symbol("@constraint")),
                     end
                     mac = Expr(:macrocall,$(quot(sym)), esc(m), args_esc...)
                     push!(code.args, mac)
+                elseif it.head == :(=)
+                    args = []
+                    push!(args, it.args[1].args[1])
+                    push!(args, Expr(:(=), it.args[1].args[2], it.args[2]))
+                    args_esc = []
+                    for ex in args
+                        push!(args_esc, esc(ex))
+                    end
+                    mac = Expr(:macrocall,$(quot(sym)), esc(m), args_esc...)
+                    push!(code.args, mac)
                 else # stand-alone symbol or expression
                     push!(code.args,Expr(:macrocall,$(quot(sym)), esc(m), esc(it)))
                 end
